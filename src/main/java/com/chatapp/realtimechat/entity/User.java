@@ -1,11 +1,11 @@
 package com.chatapp.realtimechat.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data // Lombok: Generates getters, setters, toString(), equals(), and hashCode()
 @Builder // Lombok: Provides the builder pattern for object creation
@@ -28,4 +28,23 @@ public class User {
 
     @Column(name = "created_at", nullable = false, updatable = false) // Maps to 'created_at' column. It cannot be null or updated after creation.
     private LocalDateTime createdAt;
+
+    // --- RELATIONSHIP MAPPING ---
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default // Lombok: ensures the set is initialized when using the builder
+    @EqualsAndHashCode.Exclude // Lombok: Exclude from equals/hashCode to prevent infinite loops
+    @ToString.Exclude // Lombok: Exclude from toString to prevent infinite loops
+    private Set<Message> messages = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_channels", // Name of the intermediate join table
+            joinColumns = @JoinColumn(name = "user_id"), // Foreign key for the User in the join table
+            inverseJoinColumns = @JoinColumn(name = "channel_id") // Foreign key for the other side (Channel)
+    )
+    @Builder.Default
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Channel> channels = new HashSet<>();
 }

@@ -1,11 +1,11 @@
 package com.chatapp.realtimechat.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -27,4 +27,19 @@ public class Channel {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    // --- RELATIONSHIP MAPPING ---
+
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Message> messages = new HashSet<>();
+
+    @ManyToMany(mappedBy = "channels", fetch = FetchType.LAZY) // 'mappedBy' indicates this is the non-owning side.
+    // The relationship is defined and managed by the 'channels' field in the User entity.
+    @Builder.Default
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<User> members = new HashSet<>();
 }
