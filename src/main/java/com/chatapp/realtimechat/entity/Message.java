@@ -28,6 +28,7 @@ public class Message {
 
     // --- RELATIONSHIP MAPPING ---
 
+//    Entity having @JoinColumn is the OWNING side
     @ManyToOne(fetch = FetchType.LAZY) // Many messages can be sent by one user.
     // LAZY fetch means the sender is loaded from DB only when accessed.
     @JoinColumn(name = "sender_id", nullable = false) // This creates a 'sender_id' foreign key column in the 'messages' table.
