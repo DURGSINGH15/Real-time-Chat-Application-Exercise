@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity
 @Table(name = "channels")
 public class Channel {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,4 +42,5 @@ public class Channel {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<User> members = new HashSet<>();
+
 }
