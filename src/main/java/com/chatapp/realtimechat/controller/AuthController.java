@@ -10,10 +10,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+// Import the new classes
+import com.chatapp.realtimechat.dto.LoginResponse;
+import com.chatapp.realtimechat.service.security.JwtUtil;
 
 /**
  * Controller for handling user authentication (registration and login).
@@ -25,6 +29,8 @@ public class AuthController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    // --- INJECT THE NEW JWT UTIL ---
+    private final JwtUtil jwtUtil;
 
     /**
      * Endpoint for user registration.
@@ -45,7 +51,7 @@ public class AuthController {
      * @return A response entity with a success message or an error.
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         // 1. Create an authentication object with the credentials from the request.
         //    This is the standard token Spring Security uses for username/password authentication.
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -65,6 +71,15 @@ public class AuthController {
 
         // NOTE: In the next step, we will generate and return a JWT here.
         // For now, we just return a success message.
-        return ResponseEntity.ok("Login successful!");
+//        return ResponseEntity.ok("Login successful!");
+
+        // --- GENERATE AND RETURN THE JWT ---
+        // Get the UserDetails object from the authenticated principal
+        final UserDetails userDetails = (UserDetails) authenticated.getPrincipal();
+        // Generate the token using our JwtUtil
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        // Return the token in the response body
+        return ResponseEntity.ok(new LoginResponse(jwt));
     }
 }

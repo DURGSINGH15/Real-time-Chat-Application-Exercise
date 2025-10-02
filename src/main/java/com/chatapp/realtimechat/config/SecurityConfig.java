@@ -15,6 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
+// Add new imports for JWT custom filter
+import com.chatapp.realtimechat.service.security.JwtRequestFilter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -25,7 +29,11 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
  */
 @Configuration      // Marks this class as a source of bean definitions for the application context.
 @EnableWebSecurity  // The key annotation to enable Spring Security's web security support.
+@RequiredArgsConstructor // Adding Lombok constructor injection for our new filter
 public class SecurityConfig {
+
+    // --- INJECT THE NEW JWT FILTER ---
+    private final JwtRequestFilter jwtRequestFilter;
 
     /**
      * Defines the main SecurityFilterChain bean. This bean configures the application's security policies.
@@ -66,7 +74,12 @@ public class SecurityConfig {
                 // 4. (Optional but Recommended for H2 Console) Configure Frame Options
                 // By default, Spring Security prevents rendering pages in an <iframe> or <frame> to prevent clickjacking.
                 // The H2 console runs in a frame, so we need to explicitly allow it for requests from the same origin.
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
+
+                // --- ADD THE JWT FILTER TO THE CHAIN ---
+                // We add our custom JWT filter before the standard UsernamePasswordAuthenticationFilter.
+                // This ensures that our token-based authentication is processed first.
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         // Build and return the configured HttpSecurity object.
         return http.build();
