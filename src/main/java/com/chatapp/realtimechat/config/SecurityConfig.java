@@ -19,6 +19,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import com.chatapp.realtimechat.service.security.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+// Add this new import for getting list of channels
+import org.springframework.http.HttpMethod;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -61,6 +63,9 @@ public class SecurityConfig {
                         .requestMatchers(antMatcher("/api/health")).permitAll()
                         // Allow public access to the H2 database console for development
                         .requestMatchers(antMatcher("/h2-console/**")).permitAll()
+                        // --- NEW RULE ADDITION ---
+                        // Allow unauthenticated GET requests to the list of channels
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/channels")).permitAll()
                         // All other requests must be authenticated
                         .anyRequest().authenticated()
                 )

@@ -1,5 +1,6 @@
 package com.chatapp.realtimechat.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class Channel {
     private String name;
 
     @Column(name = "is_public", nullable = false)
+    @JsonProperty("isPublic")   // tell Jackson to use "isPublic"
     private boolean isPublic;
 
     @Column(name = "created_at", nullable = false, updatable = false)
