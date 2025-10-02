@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
 @Service
 @RequiredArgsConstructor
 public class ChannelService {
@@ -67,5 +70,25 @@ public class ChannelService {
     public List<Channel> getPublicChannels() {
         // Call the new repository method to fetch only public channels.
         return channelRepository.findByIsPublic(true);
+    }
+
+    // --- NEW SERVICE METHOD ---
+
+    /**
+     * Retrieves a single channel by its ID.
+     * If the channel is not found, it throws a 404 Not Found exception.
+     *
+     * @param channelId The ID of the channel to retrieve.
+     * @return The found Channel entity.
+     * @throws ResponseStatusException if the channel is not found.
+     */
+    public Channel getChannelById(Long channelId) {
+        // Use the repository's findById method, which returns an Optional.
+        // The orElseThrow() method is a concise way to handle the "not found" case.
+        // It either returns the Channel if present or throws the specified exception.
+        return channelRepository.findById(channelId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Channel not found with ID: " + channelId) //403 forbidden coming instead of 404??
+                );
     }
 }

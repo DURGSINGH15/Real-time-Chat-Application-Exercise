@@ -64,8 +64,8 @@ public class SecurityConfig {
                         // Allow public access to the H2 database console for development
                         .requestMatchers(antMatcher("/h2-console/**")).permitAll()
                         // --- NEW RULE ADDITION ---
-                        // Allow unauthenticated GET requests to the list of channels
-                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/channels")).permitAll()
+                // Use a wildcard to permit GET requests to /api/channels AND its sub-paths.
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/channels/**")).permitAll()
                         // All other requests must be authenticated
                         .anyRequest().authenticated()
                 )

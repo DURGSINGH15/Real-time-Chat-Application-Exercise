@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 /**
  * REST controller for managing chat channels.
  * All endpoints in this controller are protected and require a valid JWT for access.
@@ -78,5 +82,28 @@ public class ChannelController {
 
         // 3. Return the list of DTOs with a 200 OK status.
         return ResponseEntity.ok(channelDtos);
+    }
+
+    // --- NEW CONTROLLER ENDPOINT ---
+
+    /**
+     * Endpoint to get details of a specific channel by its ID.
+     * The {channelId} in the path is a dynamic value captured by @PathVariable.
+     *
+     * @param channelId The ID of the channel, extracted from the URL path.
+     * @return A response entity containing the details of the requested channel.
+     */
+    @GetMapping("/{channelId}")
+    public ResponseEntity<ChannelDto> getChannelById(@PathVariable Long channelId) {
+        // 1. Call the service to fetch the channel entity.
+        // If the channel is not found, the service will throw a 404 exception,
+        // and execution will stop here.
+        Channel channel = channelService.getChannelById(channelId);
+
+        // 2. If found, map the entity to our DTO for a clean API response.
+        ChannelDto channelDto = modelMapper.map(channel, ChannelDto.class);
+
+        // 3. Return the DTO with a 200 OK status.
+        return ResponseEntity.ok(channelDto);
     }
 }
