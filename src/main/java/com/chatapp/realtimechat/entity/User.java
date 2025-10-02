@@ -1,9 +1,15 @@
 package com.chatapp.realtimechat.entity;
 
+// Import the required Spring Security classes
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +19,8 @@ import java.util.Set;
 @AllArgsConstructor // Lombok: Generates a constructor with all arguments
 @Entity // Marks this class as a JPA entity, meaning it will be mapped to a database table.
 @Table(name = "users") // Specifies the name of the database table. If omitted, the class name is used.
-public class User {
+// Implement the UserDetails interface [***CONNECTS our data model(User) with Spring Security framework]
+public class User implements UserDetails {
 
     @Id // Marks this field as the primary key for the table.
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Configures the way the ID is generated.
@@ -47,4 +54,49 @@ public class User {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Channel> channels = new HashSet<>();
+
+    // --- UserDetails Method Implementations ---
+
+    /**
+     * Returns the authorities granted to the user. For now, we are not using roles,
+     * so we return an empty collection.
+     */
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // In a real application, you would map roles (e.g., "ROLE_USER", "ROLE_ADMIN") here.
+        return Collections.emptyList();
+    }
+
+    /**
+     * getPassword() is already implemented by Lombok's @Data annotation on the 'password' field.
+     */
+
+    /**
+     * getUsername() is already implemented by Lombok's @Data annotation on the 'username' field.
+     */
+
+    @Override
+    public boolean isAccountNonExpired() {
+        // For our app, accounts do not expire.
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        // We are not implementing account locking for now.
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        // Passwords do not expire in our app.
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        // All created accounts are enabled by default.
+        return true;
+    }
+
 }
