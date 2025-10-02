@@ -41,11 +41,14 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<version>${lombok.version}</version>
+			<scope>provided</scope> <!-- Use 'provided' scope so that dependency is available on compilation-->
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -70,6 +73,40 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- Add this dependency for Spring Security -->
+		<!-- This starter includes all necessary dependencies for securing a Spring application,
+             including spring-security-core, spring-security-web, and spring-security-config. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- Dependencies for JWT (JSON Web Tokens) support -->
+		<!-- We need three separate artifacts from the jjwt library. -->
+
+		<!-- 1. jjwt-api: Defines the JWT interfaces and API. -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.5</version> <!-- Use a recent, stable version -->
+		</dependency>
+
+		<!-- 2. jjwt-impl: Provides the actual implementation of the API. -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.5</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- 3. jjwt-jackson: Handles JSON serialization/deserialization for the JWT payload using Jackson. -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.5</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -82,6 +119,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version> <!-- Ensure this matches the version used in dependencies to avoid builder() not found -->
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
