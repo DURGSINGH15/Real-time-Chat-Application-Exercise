@@ -3,6 +3,7 @@ package com.chatapp.realtimechat.controller;
 import com.chatapp.realtimechat.dto.ChannelDto;
 import com.chatapp.realtimechat.dto.CreateChannelRequest;
 import com.chatapp.realtimechat.entity.Channel;
+import com.chatapp.realtimechat.entity.Message;
 import com.chatapp.realtimechat.entity.User;
 import com.chatapp.realtimechat.service.ChannelService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,11 @@ import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.chatapp.realtimechat.dto.MessageDto;
+import com.chatapp.realtimechat.service.MessageService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * REST controller for managing chat channels.
  * All endpoints in this controller are protected and require a valid JWT for access.
@@ -32,7 +38,9 @@ public class ChannelController {
 
     // --- DEPENDENCY INJECTIONS ---
     private final ChannelService channelService;
-    private final ModelMapper modelMapper = new ModelMapper(); // A library to easily map between objects.
+    private final MessageService messageService; // Inject the new service
+
+    private final ModelMapper modelMapper ; // A library to easily map between objects.
 
     /**
      * Endpoint for an authenticated user to create a new channel.
@@ -105,5 +113,35 @@ public class ChannelController {
 
         // 3. Return the DTO with a 200 OK status.
         return ResponseEntity.ok(channelDto);
+    }
+
+    // --- NEW CONTROLLER ENDPOINT FOR MESSAGES ---
+
+    /**
+     * Endpoint to fetch message history for a specific channel with pagination.
+     * The pagination parameters (page, size, sort) are automatically mapped
+     * by Spring MVC to the Pageable object.
+     *
+     * @param channelId The ID of the channel.
+     * @param pageable  The pagination and sorting information.
+     * @return A paginated list of message DTOs.
+     */
+    @GetMapping("/{channelId}/messages")
+    public ResponseEntity<Page<MessageDto>> getMessagesForChannel(
+            @PathVariable Long channelId,
+            Pageable pageable
+    ) {
+        // 1. Call the service to get the Page of Message entities.
+        Page<Message> messagePage = messageService.getMessagesForChannel(channelId, pageable);
+
+        // 2. The Page object has a convenient .map() method to convert its content.
+        // We use it to map each Message entity to a MessageDto.
+        Page<MessageDto> messageDtoPage = messagePage.map(message ->
+                modelMapper.map(message, MessageDto.class)
+        );
+
+        // 3. Return the Page of DTOs. Jackson will serialize this into a JSON object
+        // with the content array and all pagination fields.
+        return ResponseEntity.ok(messageDtoPage);
     }
 }

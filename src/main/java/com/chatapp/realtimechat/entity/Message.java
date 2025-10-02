@@ -37,4 +37,18 @@ public class Message {
     @ManyToOne(fetch = FetchType.LAZY) // Many messages can belong to one channel.
     @JoinColumn(name = "channel_id", nullable = false) // This creates a 'channel_id' foreign key column.
     private Channel channel;
+
+//    // --- Custom Getter for DTO Mapping ---
+//
+//    /**
+//     * Custom getter to easily access the sender's username.
+//     * This is useful for mapping to a DTO without exposing the entire User object.
+//     * The @Transient annotation could be used here if we didn't want this to be considered
+//     * by JPA, but a simple getter method works just as well for ModelMapper.
+//     *
+//     * @return The username of the sender.
+//     */
+//    public String getSenderUsername() {
+//        return sender != null ? sender.getUsername() : null;
+//    }
 }
